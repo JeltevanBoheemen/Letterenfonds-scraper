@@ -13,8 +13,8 @@ It was developed for students of the Republic of Letters bachelor's course, to a
     - Installation intructions for [MacOS](https://formulae.brew.sh/formula/geckodriver) and [Windows](https://stackoverflow.com/a/56926716https://stackoverflow.com/a/56926716)
 
 ### Usage
-1. Configure the language, genre an page numbers directly in the code. Note: this is subject to change, proper configuration options will be offered in the near future.
-2. Run the code with `python scrape_letterenfonds.py`
+- Run the code with `python scrape_letterenfonds.py`
+- For configuration options: `python scrape_letterenfonds.py --help`
 
 ### Responsible use
 The scraped complies with the `robots.txt` of the LetterenFonds website. Please, use lenient sleep timing, and don't bombard the API with requests.

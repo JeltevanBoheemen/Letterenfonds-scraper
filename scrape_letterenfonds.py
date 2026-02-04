@@ -7,6 +7,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from csv import DictWriter
 from urllib.parse import urlencode
+import argparse
+import json
 
 READY_XPATH = '/html/body/div/main/div/div/div[2]/div[2]/div[1]/div/span/span[2]'
 
@@ -64,9 +66,9 @@ class LetterenFondsScraper:
         if page_nr is None:
             return self.constant_params
         else:
-            full_params = self.constant_params.update(
-                {'replica_sa_author_translations_english[page]': str(page_nr)}
-            )
+            full_params = self.constant_params | {
+                'replica_sa_author_translations_english[page]': str(page_nr)
+            }
             return full_params
 
     def single_page_url(self, page_nr: Optional[int] = None):
@@ -178,8 +180,61 @@ class LetterenFondsScraper:
 
 
 if __name__ == '__main__':
-    scraper = LetterenFondsScraper(
-        language='Duits', year_min=1900, year_max=2000, genre='Fiction'
-    )
+    with open('option_values.json', 'r') as f:
+        option_values = json.load(f)
 
-    scraper.generate_results()
+    def parse_arguments():
+        parser = argparse.ArgumentParser(
+            description='Scrape translation data from Letterenfonds'
+        )
+        parser.add_argument(
+            '--language',
+            type=str,
+            choices=option_values['language'],
+            help='Translation language (default: Duits)',
+            default='Duits',
+        )
+        parser.add_argument(
+            '--year-min',
+            type=int,
+            help='Minimum translation year (default: 1800)',
+            default=1800,
+        )
+        parser.add_argument(
+            '--year-max',
+            type=int,
+            help='Maximum translation year (default:2026)',
+            default=2026,
+        )
+        parser.add_argument(
+            '--genre',
+            type=str,
+            choices=option_values['genre'],
+            default='Fiction',
+            help='Translation genre (default: Fictie)',
+        )
+        parser.add_argument(
+            '--publication-status',
+            type=str,
+            default='Published',
+            help='Publication status (default: Published)',
+        )
+        parser.add_argument(
+            '--n-pages',
+            type=int,
+            default=1,
+            help='Number of pages to scrape (default: 1)',
+        )
+        return parser.parse_args()
+
+    if __name__ == '__main__':
+        args = parse_arguments()
+        scraper = LetterenFondsScraper(
+            language=args.language,
+            year_min=args.year_min,
+            year_max=args.year_max,
+            genre=args.genre,
+            publication_status=args.publication_status,
+            n_pages=args.n_pages,
+        )
+        scraper.generate_results()
