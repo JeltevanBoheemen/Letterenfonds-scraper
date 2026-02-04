@@ -35,7 +35,7 @@ class LetterenFondsScraper:
         return self.base_param(param_name) + f'={param_value}'
 
     def page_params(self, page_num:int=-1):
-        params = 
+        pass
 
 
 
