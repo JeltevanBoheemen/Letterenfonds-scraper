@@ -1,0 +1,16 @@
+version: 0.0.0
+message: "Please cite this software as follows:"
+
+title: "Letterenfonds Translation Scraper"
+author:
+  - family-names: "van Boheemen"
+    given-names: "Jelte"
+
+date-released: "2026-02-04"
+identifier:
+  - type: "url"
+    value: "https://github.com/JeltevanBoheemen/Letterenfonds-scraper"
+
+license:
+  - type: "other"
+    value: "BSD-3-Clause"
