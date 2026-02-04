@@ -61,7 +61,7 @@ def generate_urls_german_2000():
 def generate_urls_josefien():
     first_page ='https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=2010%3A2023'
     page_url = lambda x: f'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=2010%3A2023&replica_sa_author_translations_english%5Bpage%5D={x}'
-    return [first_page] + [page_url(i) for i in range(2, 13)]
+    return [first_page] + [page_url(i) for i in range(2, 4)]
 
 
 def retrieve_page(url):
