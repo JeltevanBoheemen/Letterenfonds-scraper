@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -13,7 +13,7 @@ import json
 READY_XPATH = '/html/body/div/main/div/div/div[2]/div[2]/div[1]/div/span/span[2]'
 
 TIMEOUT = 5
-TITLE = 'letterenfonds_output.csv'
+
 
 BASE_URL = 'https://www.letterenfonds.nl/en/translation-database?'
 
@@ -32,6 +32,7 @@ class LetterenFondsScraper:
 
     def __init__(
         self,
+        output_filename: str,
         language: str,
         year_min: int,
         year_max: int,
@@ -39,6 +40,7 @@ class LetterenFondsScraper:
         publication_status: str = 'Published',
         n_pages: int = 1,
     ):
+        self.output_filename = output_filename
         self.genre = genre
         self.language = language
         self.year_min = year_min
@@ -48,13 +50,10 @@ class LetterenFondsScraper:
 
         self.constant_params = self.build_constant_params()
 
-    def param_part(self, param_name: str, param_value):
+    def param_part(self, param_name: str, param_value) -> Tuple[str]:
         return self.base_param(param_name), param_value
 
-    def page_params(self, page_num: int = -1):
-        pass
-
-    def build_constant_params(self):
+    def build_constant_params(self) -> Dict:
         return {
             self.base_param('translation_genres'): self.genre,
             self.base_param('translation_languages'): self.language,
@@ -62,7 +61,7 @@ class LetterenFondsScraper:
             self.range_param('translation_years'): f'{self.year_min}:{self.year_max}',
         }
 
-    def single_page_params(self, page_nr: Optional[int] = None):
+    def single_page_params(self, page_nr: Optional[int] = None) -> Dict:
         if page_nr is None:
             return self.constant_params
         else:
@@ -71,18 +70,18 @@ class LetterenFondsScraper:
             }
             return full_params
 
-    def single_page_url(self, page_nr: Optional[int] = None):
+    def single_page_url(self, page_nr: Optional[int] = None) -> str:
         params = self.single_page_params(page_nr)
         return BASE_URL + urlencode(params)
 
-    def generate_urls(self):
+    def generate_urls(self) -> List[str]:
         urls = [self.single_page_url()]  # first page
         if self.n_pages > 1:
             for i in range(2, self.n_pages + 1):
                 urls.append(self.single_page_url(i))
         return urls
 
-    def retrieve_page(self, url):
+    def retrieve_page(self, url: str) -> Optional[BeautifulSoup]:
         driver = webdriver.Firefox()
         driver.get(url)
         try:
@@ -101,10 +100,10 @@ class LetterenFondsScraper:
             'span', {'class': ['col-span-full', 'text-color-text-base']}
         )
 
-    def clean_text(self, x):
+    def clean_text(self, x: str) -> str:
         return x.get_text().strip()
 
-    def get_dataid(self, soup, data_id, leftstrip=None, replaces=[]):
+    def get_dataid(self, soup, data_id, leftstrip=None, replaces=[]) -> str:
         try:
             result = self.clean_text(soup.find('span', {'data-id': data_id}))
             if leftstrip:
@@ -113,7 +112,7 @@ class LetterenFondsScraper:
         except Exception:
             return ''
 
-    def parse_entry(self, entry_soup):
+    def parse_entry(self, entry_soup) -> Dict:
         children = list(entry_soup.children)
 
         result = {}
@@ -150,13 +149,13 @@ class LetterenFondsScraper:
 
         return result
 
-    def parse_page(self, url):
+    def parse_page(self, url: str) -> Dict:
         page = self.retrieve_page(url)
         entries = self.get_entries(page)
         results = [self.parse_entry(e) for e in entries]
         return results
 
-    def parse_all_pages(self):
+    def parse_all_pages(self) -> List[Dict]:
         urls = self.generate_urls()
         counter = 1
         results = []
@@ -170,9 +169,12 @@ class LetterenFondsScraper:
                 break
         return results
 
-    def generate_results(self):
+    def generate_results(self) -> None:
+        """
+        Generate results by parsing all pages and writing them to a CSV file.
+        """
         results = self.parse_all_pages()
-        with open(TITLE, 'w', encoding='utf-16') as f:
+        with open(self.output_filename, 'w', encoding='utf-16') as f:
             writer = DictWriter(f, fieldnames=results[0].keys(), delimiter=';')
             writer.writeheader()
             for r in results:
@@ -186,6 +188,12 @@ if __name__ == '__main__':
     def parse_arguments():
         parser = argparse.ArgumentParser(
             description='Scrape translation data from Letterenfonds'
+        )
+        parser.add_argument(
+            '--output',
+            type=str,
+            default='output.csv',
+            help='Output file name (default: letterenfonds_output.csv)',
         )
         parser.add_argument(
             '--language',
@@ -230,6 +238,7 @@ if __name__ == '__main__':
     if __name__ == '__main__':
         args = parse_arguments()
         scraper = LetterenFondsScraper(
+            output_filename=args.output,
             language=args.language,
             year_min=args.year_min,
             year_max=args.year_max,
