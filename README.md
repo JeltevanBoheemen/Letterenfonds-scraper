@@ -9,6 +9,7 @@ It was developed for students of the Republic of Letters bachelor's course, to a
 ### Installation
 1. Clone this repository to your local machine
 2. Install the dependencies by running `pip install requirements.txt`. Optionally, setup a virtual environment to isolate dependencies for this project. The dependencies were tested against Python 3.13.2.
+3. Install [geckodriver](https://github.com/mozilla/geckodriver) for Firefox webdriver functionality.
 
 ### Usage
 1. Configure the language, genre an page numbers directly in the code. Note: this is subject to change, proper configuration options will be offered in the near future.
