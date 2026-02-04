@@ -1,5 +1,4 @@
 import csv
-from dataclasses import dataclass
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -7,7 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from csv import DictWriter
-import requests
 
 READY_XPATH = '/html/body/div/main/div/div/div[2]/div[2]/div[1]/div/span/span[2]'
 
@@ -18,9 +16,10 @@ BASE_URL = 'https://www.letterenfonds.nl/en/translation-database?'
 
 
 class LetterenFondsScraper:
-    base_param = lambda param_name: (
-        f'replica_sa_author_translations_english[refinementList][{param_name}][0]'
-    )
+    def base_param(param_name):
+        return (
+            f'replica_sa_author_translations_english[refinementList][{param_name}][0]'
+        )
 
     def __init__(
         self,
@@ -49,36 +48,44 @@ class LetterenFondsScraper:
 
 def generate_urls_french():
     first_page = 'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Frans&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=1900%3A2000'
-    page_url = lambda x: (
-        f'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Frans&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=1900%3A2000&replica_sa_author_translations_english%5Bpage%5D={x}'
-    )
+
+    def page_url(x):
+        return (
+            f'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Frans&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=1900%3A2000&replica_sa_author_translations_english%5Bpage%5D={x}'
+        )
 
     return [first_page] + [page_url(i) for i in range(2, 10)]
 
 
 def generate_urls_german_1950():
     first_page = 'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=1900%3A1950'
-    page_url = lambda x: (
-        f'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=1900%3A1950&replica_sa_author_translations_english%5Bpage%5D={x}'
-    )
+
+    def page_url(x):
+        return (
+            f'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=1900%3A1950&replica_sa_author_translations_english%5Bpage%5D={x}'
+        )
 
     return [first_page] + [page_url(i) for i in range(2, 7)]
 
 
 def generate_urls_german_2000():
     first_page = 'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=1951%3A2000'
-    page_url = lambda x: (
-        f'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=1951%3A2000&replica_sa_author_translations_english%5Bpage%5D={x}'
-    )
+
+    def page_url(x):
+        return (
+            f'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=1951%3A2000&replica_sa_author_translations_english%5Bpage%5D={x}'
+        )
 
     return [first_page] + [page_url(i) for i in range(2, 21)]
 
 
 def generate_urls_josefien():
     first_page = 'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=2010%3A2023'
-    page_url = lambda x: (
-        f'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=2010%3A2023&replica_sa_author_translations_english%5Bpage%5D={x}'
-    )
+
+    def page_url(x):
+        return (
+            f'https://www.letterenfonds.nl/en/translation-database?replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_genres%5D%5B0%5D=Fiction&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_languages%5D%5B0%5D=Duits&replica_sa_author_translations_english%5BrefinementList%5D%5Btranslation_publication_status%5D%5B0%5D=Published&replica_sa_author_translations_english%5Brange%5D%5Btranslation_years%5D=2010%3A2023&replica_sa_author_translations_english%5Bpage%5D={x}'
+        )
     return [first_page] + [page_url(i) for i in range(2, 4)]
 
 
@@ -103,7 +110,8 @@ def get_entries(page_soup):
     )
 
 
-clean_text = lambda x: x.get_text().strip()
+def clean_text(x):
+    return x.get_text().strip()
 
 
 def get_dataid(soup, data_id, leftstrip=None, replaces=[]):
@@ -112,7 +120,8 @@ def get_dataid(soup, data_id, leftstrip=None, replaces=[]):
         if leftstrip:
             result = result.lstrip(leftstrip)
         return result
-    except:
+    except Exception as e:
+        print(e)
         return ''
 
 
@@ -160,8 +169,8 @@ def parse_all_pages():
             results += parse_page(url)
             print(f'parsed page {counter}')
             counter += 1
-        except:
-            print(f'failed to parse page {counter}')
+        except Exception as e:
+            print(f'failed to parse page {counter}', e)
             break
     return results
 
