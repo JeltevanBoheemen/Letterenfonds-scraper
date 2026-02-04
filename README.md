@@ -1,4 +1,5 @@
-# Letterenfonds scraper
+# Letterenfonds Translations scraper
+[![FAIR checklist badge](https://fairsoftwarechecklist.net/badge.svg)](https://fairsoftwarechecklist.net/v0.2?f=11&a=30112&i=02020&r=113)
 
 ## Overview
 This project comprises a simple webscraper for the database of literary translations of the [Dutch Foundation for Literature](https://www.letterenfonds.nl/).
